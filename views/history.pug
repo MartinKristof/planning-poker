@@ -1,0 +1,24 @@
+extends layout
+
+block content
+    h3 History
+
+    .row
+        .col.text-center
+            .row
+                a.btn.btn-success.btn-lg(href='/room/'+room type='button') Get planning !
+
+    p
+
+    .card
+        each row in history
+            .card-header= row.story
+            .card-body
+                h5.card-title= row.date.toLocaleString()
+                .card-text.row
+                    each pl in row.clients
+                        - var player = JSON.parse(pl)
+                        .col !{player.name} : !{player.card} 
+
+block append scripts
+    script(src='/js/home.js')

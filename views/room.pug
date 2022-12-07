@@ -1,0 +1,114 @@
+extends layout
+
+mixin cardCol()
+    .col-4.col-xs-3.col-sm-2.col-md-1.p-0.mb-1.p-1
+        button.w-100.btn.btn-block.btn-primary.cardSelection(type='button')
+            block
+
+mixin cardSelectionCols()
+    each card in cards
+        if card.icon
+            +cardCol
+                span(class=card.icon aria-hidden="true")
+        else 
+            +cardCol(card)
+                b!=card
+    
+block content
+    #game.row.text-center
+        .col-12.col-md-10
+            button.p-0.m-0.btn.btn-lg.w-100(data-bs-toggle="modal" data-bs-target="#chUserStoryModal")#userStory User Story
+            
+            buttons.btn.btn-default.disabled(type="button") Parcipiants: 
+                span#participantsNo.badge.bg-secondary ?
+                |  /  
+                span#participantWathNo.badge.bg-secondary ?
+            
+            .row.mb-4
+                #progressBarArea.col
+                    button#actionBtn.btn.btn-block.btn-light.btn-lg.w-100.disabled(type="button")
+                        span#actionText &#8987;
+                        #progressBar.progress.progress-striped.active(style="height: 20px")
+                            .progress-bar(role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100")
+            
+            #cardsSelection.row.mb-2
+                +cardSelectionCols
+
+            #cardsResult.row
+
+        .col-6.col-md-2.px-0
+            #participants.list-group.m-0.p-0.text-start
+
+    div#alerts
+        #alert.toast.d-none(role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="2000")
+            .toast-header
+                strong.me-auto Bootstrap
+                small
+                button(type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close")
+            .toast-body
+                | Hello, world! This is a toast message.
+
+
+    #defcard.d-none.playcard.card.m-1.p-0.shadow-sm(style="width: 10rem;")
+        .card-header
+            h4.fw-normal Card title
+        .card-body.bg-body
+            h1.points.card-text My text
+
+    div#preGame.d-none
+        h1#room(data-room=room) Real Time Planning Poker
+        p.lead.text-center
+            | Planning Poker is a way to estimate a relative effort for a given task.
+            br
+            a#copyLink(href='/room/'+room) Share the link to your collaborators ➔
+            br
+        .row
+            .col.text-center
+                .row
+                    button#getPlanning.btn.btn-success.btn-lg(type='button') Get planning !
+                .row.mt-5
+                    div#qrCode
+
+    #chUserStoryModal.modal.fade(tabindex="-1" aria-hidden="true")
+        .modal-dialog
+            form#changeuserStory.modal-content
+                .modal-header
+                    h5.modal-title(id="chNameModalLabel") New Story
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                .modal-body
+                        .mb-3
+                            input#newUserStory.form-control(type="text")
+                .modal-footer
+                    button(type="button" class="btn btn-secondary" data-bs-dismiss="modal") Close
+                    button(type="submit" class="btn btn-primary") Confirm
+
+
+    #chNameModal.modal.fade(tabindex="-1" aria-hidden="true")
+        .modal-dialog
+            form#changeName.modal-content
+                .modal-header
+                    h5.modal-title(id="chNameModalLabel") New Name
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                .modal-body
+                        .mb-3
+                            input#newName.form-control(type="text")
+                .modal-footer
+                    button(type="button" class="btn btn-secondary" data-bs-dismiss="modal") Close
+                    button(type="submit" class="btn btn-primary") Confirm
+
+    #kickPlayerModal.modal.fade(tabindex="-1" aria-labelledby="disablePlayer" aria-hidden="true")
+        .modal-dialog
+            form#kickPlayer.modal-content
+                .modal-header
+                    h5.modal-title(id="disablePlayerModal") Kick out player
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                .modal-body
+                        .mb-3
+                            | Set Player as watcher
+                            input.form-control(type="hidden")
+                .modal-footer
+                    button(type="button" class="btn btn-secondary" data-bs-dismiss="modal") Close
+                    button(type="submit" class="btn btn-primary") Confirm
+
+block append scripts
+    script(src='/js/main.js')

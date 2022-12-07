@@ -1,0 +1,10 @@
+
+// Alerts
+// -------------------------
+
+#alerts{
+	position: absolute;
+	top: 50px;
+	right: 50px;
+	min-width: 200px;
+}

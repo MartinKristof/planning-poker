@@ -1,0 +1,14 @@
+extends layout
+
+block content
+    h3 Real Time Planning Poker
+    p.lead
+	
+    form.row#roomForm(role='form')
+        .input-group
+            input.col-6#roomName.form-control(type='text', placeholder='Creating room name...', readonly=true)
+            button.btn.btn-primary(disabled=true) Go  
+                i.fa.fa-play
+
+block append scripts
+    script(src='/js/home.js')
