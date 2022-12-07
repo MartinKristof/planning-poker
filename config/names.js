@@ -1,7 +1,7 @@
 module.exports = {
     names: [
         {
-            "name": "Bambulka"
+            "name": "Mára"
         },
         {
             "name": "Béďa rošťák"
@@ -176,6 +176,21 @@ module.exports = {
         },
         {
             "name": "Zvonilka"
-        }
+        },
+        {
+            "name": "Mára Grynhof"
+        },
+        {
+            "name": "Luky Putnič"
+        },
+        {
+            "name": "Zoltán"
+        },
+        {
+            "name": "Johny"
+        },
+        {
+            "name": "Franta"
+        },
     ]
 };

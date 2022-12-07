@@ -62,7 +62,7 @@ $(document).ready(function () {
         if (data.kickedPlayer !== undefined) {
             newAlert("danger", "info", data.kickedOrigin + " just kicked " + data.kickedPlayer);
         }
-        
+
         if (data.playAgain !== undefined) {
             newAlert("info", "info", "New game started");
         }
@@ -233,9 +233,14 @@ $(document).ready(function () {
     $(document).on("click", "#actionBtn", function (e) {
         if (!ui.cardsRevealed) {
             socket.emit("revealCards", { room: room });
+            var index = Math.floor(Math.random() * 60) + 1;
+            var audio = new Audio(`/audio/${index}.ogg`);
+            audio.play();
             e.preventDefault();
         } else {
             socket.emit("playAgain", { room: room });
+            var audio = new Audio(`/audio/new.ogg`);
+            audio.play();
             bsModal = new bootstrap.Modal(chUserStoryModal);
             bsModal.show();
             e.preventDefault();
