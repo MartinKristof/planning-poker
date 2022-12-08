@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "poker planning with socket.io",
   "scripts": {
-    "start": "node app.js",
+    "start": "PORT=80 node app.js",
     "debug": "node --inspect app.js"
   },
   "dependencies": {
