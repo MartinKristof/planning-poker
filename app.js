@@ -400,8 +400,8 @@ io.on('connection', (socket) => {
         socket.to(room).emit('participants', {
             clients: pInRoom,
             disconnect: user,
-            cardsRevealed: rooms[room].cardsRevealed,
-            pauseRemaining: rooms[room].pauseRemaining,
+            cardsRevealed: rooms[room]?.cardsRevealed,
+            pauseRemaining: rooms[room]?.pauseRemaining,
             sfxIndex
         });
         console.log(socket.id + ' : Socket disconnected');
