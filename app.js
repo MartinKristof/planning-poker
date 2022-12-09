@@ -100,6 +100,10 @@ server.listen(app.get('port'), function () {
     console.log("✔ Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
 });
 
+function generateSfx() {
+    return Math.floor(Math.random() * 60) + 1;
+}
+
 var clients = {};
 var rooms = {};
 const CARD_SELECTED = "^";
@@ -119,6 +123,7 @@ io.on('connection', (socket) => {
         if (!room) {
             return socket.disconnect();
         }
+        sfxIndex = generateSfx();
 
         // Join room
         socket.join(room);
@@ -129,7 +134,7 @@ io.on('connection', (socket) => {
         // Check if room id defined
         if (rooms[room] === undefined) {
             // If not define it and set it's userStory to undefined
-            rooms[room] = { name: room, currentUserStory: undefined, cardsRevealed: false, pauseRemaining: false, history: [] };
+            rooms[room] = { name: room, currentUserStory: undefined, cardsRevealed: false, pauseRemaining: false, history: [], sfxIndex };
         }
 
         // Check if client already has a name
@@ -163,7 +168,8 @@ io.on('connection', (socket) => {
             myid: socket.id,
             name: clients[socket.id].name,
             cardsRevealed: rooms[room].cardsRevealed,
-            pauseRemaining: rooms[room].pauseRemaining
+            pauseRemaining: rooms[room].pauseRemaining,
+            sfxIndex,
         });
 
         // Broadcast the array in order to list all participants in client
@@ -171,7 +177,8 @@ io.on('connection', (socket) => {
             clients: pInRoom,
             connect: clients[socket.id].name,
             cardsRevealed: rooms[room].cardsRevealed,
-            pauseRemaining: rooms[room].pauseRemaining
+            pauseRemaining: rooms[room].pauseRemaining,
+            sfxIndex
         });
     });
 
@@ -185,6 +192,8 @@ io.on('connection', (socket) => {
         if (!room) {
             return socket.disconnect();
         }
+        sfxIndex = generateSfx();
+
         var newName = '';
         try {
             if (data.newName) {
@@ -201,7 +210,8 @@ io.on('connection', (socket) => {
             io.in(room).emit('participants', {
                 clients: pInRoom,
                 cardsRevealed: rooms[room].cardsRevealed,
-                pauseRemaining: rooms[room].pauseRemaining
+                pauseRemaining: rooms[room].pauseRemaining,
+                sfxIndex,
             });
         }
     });
@@ -229,7 +239,8 @@ io.on('connection', (socket) => {
                         kickedPlayer: clients[data.participant].name,
                         kickedOrigin: clients[socket.id].name,
                         cardsRevealed: rooms[room].cardsRevealed,
-                        pauseRemaining: rooms[room].pauseRemaining
+                        pauseRemaining: rooms[room].pauseRemaining,
+                        sfxIndex
                     });
                 }
             }
@@ -280,7 +291,8 @@ io.on('connection', (socket) => {
             io.in(room).emit('participants', {
                 clients: pInRoom,
                 cardsRevealed: rooms[room].cardsRevealed,
-                pauseRemaining: rooms[room].pauseRemaining
+                pauseRemaining: rooms[room].pauseRemaining,
+                sfxIndex
             });
         }
     });
@@ -294,6 +306,8 @@ io.on('connection', (socket) => {
         if (!room) {
             return socket.disconnect();
         }
+
+        sfxIndex = generateSfx();
         // If the user story is blank, set it to 'User story'
         if (data.userStory == '') {
             data.userStory = 'User story';
@@ -302,7 +316,7 @@ io.on('connection', (socket) => {
         newName = sanitizeName(newName, 100);
 
         rooms[room].currentUserStory = newName;
-        io.in(room).emit('newUserStory', rooms[room].currentUserStory);
+        io.in(room).emit('newUserStory', rooms[room].currentUserStory, sfxIndex);
     });
 
     /**
@@ -313,6 +327,7 @@ io.on('connection', (socket) => {
         if (!room) {
             return socket.disconnect();
         }
+
         // Only reveal cards if all players chose their's
         if (checkCards(socket, room) === true) {
             rooms[room].cardsRevealed = true;
@@ -328,7 +343,7 @@ io.on('connection', (socket) => {
             // wait for playAgain
             intervalid = setInterval(() => {
                 if (rooms[room].pauseRemaining > 0) {
-                    rooms[room].pauseRemaining -= 1; 
+                    rooms[room].pauseRemaining -= 1;
                 } else {
                     rooms[room].pauseRemaining = false;
                     clearInterval(intervalid);
@@ -364,7 +379,8 @@ io.on('connection', (socket) => {
                 clients: pInRoom,
                 cardsRevealed: rooms[room].cardsRevealed,
                 pauseRemaining: rooms[room].pauseRemaining,
-                playAgain: true
+                playAgain: true,
+                sfxIndex,
             });
         }
     });
@@ -385,7 +401,8 @@ io.on('connection', (socket) => {
             clients: pInRoom,
             disconnect: user,
             cardsRevealed: rooms[room].cardsRevealed,
-            pauseRemaining: rooms[room].pauseRemaining
+            pauseRemaining: rooms[room].pauseRemaining,
+            sfxIndex
         });
         console.log(socket.id + ' : Socket disconnected');
     });
@@ -417,7 +434,8 @@ function sendStatusToClients(socket, room) {
     io.in(room).emit('participants', {
         clients: pInRoom,
         cardsRevealed: rooms[room].cardsRevealed,
-        pauseRemaining: rooms[room].pauseRemaining
+        pauseRemaining: rooms[room].pauseRemaining,
+        sfxIndex
     });
 }
 

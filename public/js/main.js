@@ -16,6 +16,9 @@ var player = {
     watch: false,
     card: undefined
 };
+var sfxIndex = null;
+var isSfxPlaying = false;
+
 
 $(document).ready(function () {
     $('#shareLink').removeClass("disabled");
@@ -79,6 +82,7 @@ $(document).ready(function () {
             ui.pauseRemaining = data.pauseRemaining;
         }
 
+        sfxIndex = data.sfxIndex;
         updateParticipants(data.clients);
         displayCards(data.clients);
     });
@@ -86,9 +90,11 @@ $(document).ready(function () {
     /**
      * Update User Story
      */
-    socket.on("newUserStory", function (userStory) {
+    socket.on("newUserStory", function (userStory, newSfxIndex) {
         $("#userStory").html(userStory);
         newAlert("warning", "info", "User story changed to " + userStory);
+        isSfxPlaying = false;
+        sfxIndex = newSfxIndex;
     });
 
     /**
@@ -233,9 +239,6 @@ $(document).ready(function () {
     $(document).on("click", "#actionBtn", function (e) {
         if (!ui.cardsRevealed) {
             socket.emit("revealCards", { room: room });
-            var index = Math.floor(Math.random() * 60) + 1;
-            var audio = new Audio(`/audio/${index}.ogg`);
-            audio.play();
             e.preventDefault();
         } else {
             socket.emit("playAgain", { room: room });
@@ -422,6 +425,12 @@ function displayCards(clients) {
         $("#actionBtn").removeClass('disabled');
         $("#actionBtn").addClass('btn-info');
         $("#actionText").html("Play Again");
+
+        if (!isSfxPlaying) {
+            var audio = new Audio(`/audio/${sfxIndex}.ogg`);
+            audio.play();
+            isSfxPlaying = true;
+        }
     } else if (progress > 99) {
         enableCards(clients);
         $("#actionBtn").removeClass('disabled');
