@@ -18,12 +18,21 @@ var player = {
 };
 var sfxIndex = null;
 var isSfxPlaying = false;
+var sfxEnabled;
 
+if (sessionStorage.getItem("sfx") === 'true') {
+    sfxEnabled = true;
+} else if (sessionStorage.getItem("sfx") === 'false') {
+    sfxEnabled = false;
+} else {
+    sfxEnabled = true;
+}
 
 $(document).ready(function () {
     $('#shareLink').removeClass("disabled");
     $('#historyLink').removeClass("disabled");
     $('#watchOnly').removeClass("disabled");
+    $('#toggleSfx').toggleClass("btn-primary", sfxEnabled);
 
     /**
      * Socket.IO
@@ -233,6 +242,13 @@ $(document).ready(function () {
         socket.emit("cardSelected", { room: room, card: undefined, watch: player.watch });
     });
 
+    $("#toggleSfx").click(function (e) {
+        sfxEnabled = !sfxEnabled;
+        sessionStorage.setItem("sfx", sfxEnabled);
+
+        $('#toggleSfx').toggleClass("btn-primary", sfxEnabled);
+    });
+
     /**
      * Reveal Cards | Play Again
      */
@@ -242,8 +258,12 @@ $(document).ready(function () {
             e.preventDefault();
         } else {
             socket.emit("playAgain", { room: room });
-            var audio = new Audio(`/audio/new.ogg`);
-            audio.play();
+
+            if (sfxEnabled) {
+                var audio = new Audio(`/audio/new.ogg`);
+                audio.play();
+            }
+
             bsModal = new bootstrap.Modal(chUserStoryModal);
             bsModal.show();
             e.preventDefault();
@@ -426,7 +446,7 @@ function displayCards(clients) {
         $("#actionBtn").addClass('btn-info');
         $("#actionText").html("Play Again");
 
-        if (!isSfxPlaying) {
+        if (!isSfxPlaying && sfxEnabled) {
             var audio = new Audio(`/audio/${sfxIndex}.ogg`);
             audio.play();
             isSfxPlaying = true;
